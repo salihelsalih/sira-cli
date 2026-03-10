@@ -265,14 +265,14 @@ episodes_list() {
 
 # Initialize OpenAnime session and get Gateway-Token
 openanime_init() {
-    oa_device_id=$(printf '%s%s' "$(date +%s)" "$$" | cksum | cut -d' ' -f1)
-    oa_device_id=$(printf '%08x-%04x-%04x-%04x-%012x' \
-        "$oa_device_id" "$(( RANDOM % 65536 ))" "$(( RANDOM % 65536 ))" \
-        "$(( RANDOM % 65536 ))" "$(( RANDOM % 281474976710656 ))")
+    oa_cr=$(printf '%08x-%04x-%04x-%04x-%012x' \
+        "$(( RANDOM * RANDOM % 4294967296 ))" "$(( RANDOM % 65536 ))" \
+        "$(( RANDOM % 65536 ))" "$(( RANDOM % 65536 ))" \
+        "$(( RANDOM * RANDOM % 281474976710656 ))")
     oa_token=$(curl -s -X POST "https://api.openani.me/session/init" \
         -H "Content-Type: application/json" \
         -A "$agent" \
-        -d "{\"deviceId\":\"${oa_device_id}\"}" | sed -nE 's/.*"token":"([^"]*)".*/\1/p')
+        -d "{\"cr\":\"${oa_cr}\"}" | sed -nE 's/.*"sessionId":"([^"]*)".*/\1/p')
     [ -z "$oa_token" ] && die "OpenAnime: Session baslatilamadi! Internet baglantini kontrol et."
 }
 
