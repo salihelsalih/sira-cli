@@ -363,7 +363,12 @@ download() {
 play_episode() {
     [ "$log_episode" = 1 ] && [ "$player_function" != "debug" ] && [ "$player_function" != "download" ] && command -v logger >/dev/null && logger -t ani-cli "${allanime_title}${ep_no}"
     [ "$skip_intro" = 1 ] && skip_flag="$(ani-skip -q "$mal_id" -e "$ep_no")"
-    [ -z "$episode" ] && get_episode_url
+    if [ -z "$episode" ]; then
+        case "$ani_source" in
+            OpenAnime) openanime_get_episode_url "$id" "1" "$ep_no" ;;
+            *) get_episode_url ;;
+        esac
+    fi
     # shellcheck disable=SC2086
     case "$player_function" in
         debug)
